@@ -17,9 +17,11 @@ class BS811X
   uint8_t _address;
   uint16_t _keys = 0;
   uint16_t _prev_state = 0;
-  uint8_t _length;
-  uint8_t _settings_1[23] = {0xB0, 0, 0, 0x83, 0xF3, 0xD8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0xCE};
-  uint8_t _settings_2[19] = {0xB0, 0, 0, 0x83, 0xF3, 0xD8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0xAE};
+  const static uint8_t _length = 21;
+  // Default settings for BS8116A.
+  // 4th byte (0x03) disables IRQ on Key 16.
+  // Last byte (0x4E) is the calculated checksum.
+  uint8_t _settings[23] = {0xB0, 0, 0, 0x03, 0xF3, 0xD8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0x4E};
 
 public:
   // Constructor
@@ -47,10 +49,9 @@ public:
   // param edge direction/1/2, key Number of key
   bool getKey_edge(uint8_t direction, uint8_t key);
   // Return true if the initialize process has been a success
-  // param chip type
   // param sda SDA pin
   // param scl SCL pin
-  bool begin(String chip, int8_t sda = -1, int8_t scl = -1);
+  bool begin(int8_t sda = -1, int8_t scl = -1);
 };
 
 #endif // BS811X_H

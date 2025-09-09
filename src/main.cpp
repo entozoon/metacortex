@@ -4,11 +4,13 @@
 
 BS811X bs8116;
 
+const int keyOrder[16] = {15, 16, 1, 2, 11, 12, 13, 14, 7, 8, 9, 10, 3, 4, 5, 6};
+
 void setup()
 {
   Serial.begin(115200);
   delay(3000);
-  if (!bs8116.begin("8116", 8, 9))
+  if (!bs8116.begin(8, 9))
   {
     Serial.println("BS8116A initialization failed!");
     while (1)
@@ -27,7 +29,7 @@ void loop()
     {
       if (keymap & (1 << i))
       {
-        Serial.print(i + 1);
+        Serial.print(keyOrder[i]);
         Serial.print(" ");
       }
     }

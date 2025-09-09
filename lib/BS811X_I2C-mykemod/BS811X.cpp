@@ -58,14 +58,7 @@ bool BS811X::readSetting(uint8_t *array)
 uint8_t BS811X::setSetting()
 {
   Wire.beginTransmission(_address);
-  if (_length == 21)
-  {
-    Wire.write(_settings_1, (_length + 2));
-  }
-  else if (_length == 17)
-  {
-    Wire.write(_settings_2, (_length + 2));
-  }
+  Wire.write(_settings, (_length + 2));
   return Wire.endTransmission(true);
 }
 
@@ -104,17 +97,9 @@ bool BS811X::getKey_edge(uint8_t direction, uint8_t key)
   }
 }
 
-bool BS811X::begin(String chip, int8_t sda, int8_t scl)
+bool BS811X::begin(int8_t sda, int8_t scl)
 {
-  if (chip == "8116")
-  {
-    _length = 21;
-  }
-  else if (chip == "8112")
-  {
-    _length = 17;
-  }
   Wire.begin(sda, scl);
   delay(100);
-  return true;
+  return (setSetting() == 0);
 }
