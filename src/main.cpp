@@ -3,11 +3,16 @@
 #include <BS811X.h>
 #include <Adafruit_NeoPixel.h>
 BS811X bs8116;
-const int keyOrder[16] = {14, 15, 0, 1, 10, 11, 12, 13, 6, 7, 8, 9, 2, 3, 4, 5};
+struct Pad
+{
+  int keymapIndex;
+  int ledIndex;
+};
+const Pad pads[16] = {
+    {14, 3}, {15, 2}, {0, 1}, {1, 0}, {10, 7}, {11, 6}, {12, 5}, {13, 4}, {6, 11}, {7, 10}, {8, 9}, {9, 8}, {2, 15}, {3, 14}, {4, 13}, {5, 12}};
 #define PIN 10
 #define NUMPIXELS 16
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
-const int ledOrder[16] = {3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12};
 void setup()
 {
   Serial.begin(115200);
@@ -35,11 +40,9 @@ void loop()
     Serial.print(" -> Key(s): ");
     for (int i = 0; i < 16; i++) // i is the physical pad number
     {
-      int keymapIndex = keyOrder[i]; // The bit in the keymap corresponding to this pad
-      if (keymap & (1 << keymapIndex))
+      if (keymap & (1 << pads[i].keymapIndex))
       {
-        int ledIndex = ledOrder[i]; // The LED corresponding to this pad
-        pixels.setPixelColor(ledIndex, pixels.Color(255, 255, 255));
+        pixels.setPixelColor(pads[i].ledIndex, pixels.Color(0, 255, 0));
         Serial.print(i); // Print the physical pad number
         Serial.print(" ");
       }
@@ -47,5 +50,5 @@ void loop()
     Serial.println();
   }
   pixels.show();
-  delay(100);
+  delay(10);
 }
