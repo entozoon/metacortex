@@ -10,8 +10,11 @@ class BS8116A
 {
 public:
   BS8116A();
-  void begin(int sda, int scl);
+  bool begin(int sda, int scl);
   uint16_t readKeys();
+
+private:
+  bool init();
 };
 
 #endif
