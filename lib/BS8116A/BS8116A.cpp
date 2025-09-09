@@ -27,5 +27,5 @@ uint16_t BS8116A::readKeys()
     key_value[1] = Wire.read();
   }
 
-  return key_value[0] + (key_value[1] << 8);
+  return (key_value[0] << 8) + key_value[1];
 }
