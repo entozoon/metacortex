@@ -1,42 +1,45 @@
-#include <Adafruit_NeoPixel.h>
-
-#define PIN 7
-#define NUMPIXELS 16 // 4x4 matrix
-
-Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
-
-// Helper function to generate rainbow colors
-uint32_t Wheel(byte WheelPos)
-{
-  WheelPos = 255 - WheelPos;
-  if (WheelPos < 85)
-  {
-    return pixels.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-  }
-  if (WheelPos < 170)
-  {
-    WheelPos -= 85;
-    return pixels.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
-  WheelPos -= 170;
-  return pixels.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
-}
-
+#include <Arduino.h>
+#include <Wire.h>
+#include <BS811X.h>
+BS811X bs8116;
 void setup()
 {
-  pixels.begin();
-  pixels.setBrightness(50); // Set brightness to a moderate level
+  bs8116.begin("8116"); // Use "8116" or "8112" to indicate chip type
+  Serial.begin(115200);
+  delay(4000);
 }
-
 void loop()
 {
-  for (int j = 0; j < 256; j++)
-  { // Cycle through all 256 colors in the wheel
-    for (int i = 0; i < NUMPIXELS; i++)
+  uint16_t keymap = bs8116.readKeys();
+  String map;
+  for (uint8_t i = 0; i < 16; i++)
+  { // For 8112 should be 12
+    uint8_t bit = bitRead(keymap, i);
+    if (bit)
     {
-      pixels.setPixelColor(i, Wheel((i + j) & 255));
+      map += '1';
     }
-    pixels.show();
-    delay(20);
+    else
+    {
+      map += '0';
+    }
   }
+  Serial.print("Key status:");
+  Serial.print(map);
+  uint8_t key = bs8116.getKey_active();
+  Serial.print("  Pressed key: ");
+  Serial.println(key);
+  if (bs8116.getKey_passive(12))
+  {
+    Serial.println("Key 12 is pressed！");
+  }
+  if (bs8116.getKey_edge(1, 2))
+  {
+    Serial.println("Key 2 rising edge detected！");
+  }
+  else if (bs8116.getKey_edge(2, 2))
+  {
+    Serial.println("Key 2 falling edge detected！");
+  }
+  delay(1000);
 }
